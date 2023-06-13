@@ -1,0 +1,20 @@
+{
+  "name": "node-session",
+  "version": "1.0.0",
+  "description": "Node JS session conduct by Systems Limited",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdnanLatif/node-session.git"
+  },
+  "author": "Adnan Latif - 21642",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdnanLatif/node-session/issues"
+  },
+  "homepage": "https://github.com/AdnanLatif/node-session#readme"
+}
