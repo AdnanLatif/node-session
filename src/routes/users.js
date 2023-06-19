@@ -26,6 +26,8 @@ const secretKey = process.env.SECRET_JWT_KEY;
  *   get:
  *     summary: Get all users.
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Success.
@@ -36,7 +38,7 @@ const secretKey = process.env.SECRET_JWT_KEY;
  *       500:
  *         description: Internal server error.
  */
-router.get('/', (req, res) => {
+router.get('/', authenticateToken, (req, res) => {
   try {
     let users = [];
     try {
@@ -290,6 +292,8 @@ router.patch('/profile', authenticateToken, (req, res) => {
  *   patch:
  *     summary: Update user by ID.
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -317,7 +321,7 @@ router.patch('/profile', authenticateToken, (req, res) => {
  *         description: Internal server error.
  */
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
   const { username, email } = req.body;
   const users = JSON.parse(fs.readFileSync(usersFile));
@@ -342,6 +346,8 @@ router.patch('/:id', (req, res) => {
  *   get:
  *     summary: Get user by ID.
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -376,7 +382,7 @@ router.patch('/:id', (req, res) => {
  *             - email
  */
 
-router.get('/:id', (req, res) => {
+router.get('/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
   const users = JSON.parse(fs.readFileSync(usersFile));
   const user = users.find((user) => user.id === id);
