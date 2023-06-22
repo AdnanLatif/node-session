@@ -6,11 +6,9 @@ const Cart = require('../models/Cart');
 // Place an order
 const placeOrder = async (req, res) => {
   try {
-    // Process the order and get the necessary data
     const { user } = req;
     const { cartId } = req.body;
 
-    // Fetch the cart from the database using the cartId
     const cart = await Cart.findById(cartId);
     if (!cart) {
       return res.status(404).json({ error: 'Cart not found' });
@@ -22,23 +20,19 @@ const placeOrder = async (req, res) => {
       name: item.product.name,
     }));
 
-    // Calculate the total price
     const totalPrice = cart.products.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
 
-    // Create a new order
     const order = new Order({
       user: user.id,
       products,
       orderPrice: totalPrice,
     });
 
-    // Save the order
     await order.save();
 
-    // Deduct the quantity from actual products
     await Promise.all(
       cart.products.map(async (item) => {
         const product = await Product.findById(item.product);
@@ -49,10 +43,8 @@ const placeOrder = async (req, res) => {
       })
     );
 
-    // Send the cart details email to the user
     await emailService.sendCartDetailsEmail(user.email, cart);
 
-    // Delete the cart
     await Cart.findByIdAndDelete(cart._id);
 
     res.json({ message: 'Order placed successfully' });
@@ -62,12 +54,17 @@ const placeOrder = async (req, res) => {
   }
 };
 
+// Get user orders
 const getUserOrders = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
-    // Find orders for the user
-    const orders = await Order.find({ user: userId });
+
+    let query = {};
+    if (userId !== 'all') {
+      query = { user: userId };
+    }
+
+    const orders = await Order.find(query);
 
     res.json({ orders });
   } catch (error) {
@@ -76,7 +73,44 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+// Get all orders (admin access)
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find();
+
+    res.json({ orders });
+  } catch (error) {
+    console.error('Error retrieving all orders:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Get order by ID (admin access or user's own order)
+const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Check if the user is authorized to access the order
+    if (req.user.role !== 'admin' && order.user.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    res.json({ order });
+  } catch (error) {
+    console.error('Error retrieving order by ID:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 module.exports = {
   placeOrder,
   getUserOrders,
+  getAllOrders,
+  getOrderById,
 };
