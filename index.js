@@ -22,6 +22,9 @@ db.once('connected', () => {
 app.use(express.json());
 
 // Set up routes
+app.use('/', (req, res) => {
+  res.send('Welcome to the Ecom API');
+});
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
