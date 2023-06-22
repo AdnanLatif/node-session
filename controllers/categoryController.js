@@ -72,7 +72,7 @@ const deleteCategory = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-    await category.remove();
+    await category.deleteOne();
     res.json({ message: 'Category deleted successfully' });
   } catch (err) {
     console.error(err.message);
