@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 const {
@@ -14,7 +15,7 @@ router.get(
   '/:userId',
   authenticateUser,
   authorizeUser,
-  orderController.getUserOrders
+  orderController.getUserOrders,
 );
 
 // Route for getting all orders (admin access)
@@ -22,7 +23,7 @@ router.get(
   '/all',
   authenticateUser,
   authorizeUser,
-  orderController.getAllOrders
+  orderController.getAllOrders,
 );
 
 // Route for getting order by ID (admin access or user's own order)

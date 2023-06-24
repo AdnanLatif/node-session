@@ -5,7 +5,9 @@ const User = require('../models/User');
 const secretKey = process.env.SECRET_JWT_KEY;
 // User signup
 const signup = async (req, res) => {
-  const { username, email, password, role } = req.body;
+  const {
+    username, email, password, role,
+  } = req.body;
 
   try {
     // Check if the user already exists
@@ -76,7 +78,9 @@ const login = async (req, res) => {
     const { _id, username, role } = user;
     jwt.sign(payload, secretKey, { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
-      res.json({ _id, username, email, role, token });
+      res.json({
+        _id, username, email, role, token,
+      });
     });
   } catch (err) {
     console.error(err.message);

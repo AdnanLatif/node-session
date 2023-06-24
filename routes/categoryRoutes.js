@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const categoryController = require('../controllers/categoryController');
 const {
@@ -17,7 +18,7 @@ router.post(
   '/',
   authenticateUser,
   authorizeUser,
-  categoryController.createCategory
+  categoryController.createCategory,
 );
 
 // Update a category
@@ -25,7 +26,7 @@ router.patch(
   '/:id',
   authenticateUser,
   authorizeUser,
-  categoryController.updateCategory
+  categoryController.updateCategory,
 );
 
 // Delete a category
@@ -33,7 +34,7 @@ router.delete(
   '/:id',
   authenticateUser,
   authorizeUser,
-  categoryController.deleteCategory
+  categoryController.deleteCategory,
 );
 
 module.exports = router;

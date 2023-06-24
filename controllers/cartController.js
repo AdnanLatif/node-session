@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 const getUserCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id }).populate(
-      'products.product'
+      'products.product',
     );
     res.json(cart);
   } catch (err) {
@@ -27,40 +27,46 @@ const addProductToCart = async (req, res) => {
       });
     }
 
-    for (const { productId, quantity } of products) {
+    // Create an array of promises
+    const promises = products.map(async ({ productId, quantity }) => {
       const product = await Product.findById(productId);
       if (!product) {
-        return res
-          .status(404)
-          .json({ error: `Product with ID ${productId} not found` });
+        throw new Error(`Product with ID ${productId} not found`);
       }
 
       // Check if the required quantity is available
       if (product.availableQuantity < quantity) {
-        return res.status(400).json({
-          error: `Insufficient quantity for product with title ${product.title}`,
-        });
+        throw new Error(
+          `Insufficient quantity for product with title ${product.title}`,
+        );
       }
 
       const existingProduct = cart.products.find(
-        (item) => item.product.toString() === productId
+        (item) => item.product.toString() === productId,
       );
 
       if (existingProduct) {
         existingProduct.quantity += quantity;
       } else {
-        const price = product.price; // Retrieve the price from the product
+        const { price } = product; // Retrieve the price from the product
         cart.products.push({ product: productId, quantity, price });
       }
 
       // Deduct the quantity from the product
       product.quantity -= quantity;
       await product.save();
+    });
+
+    try {
+      // Await all promises to resolve
+      await Promise.all(promises);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
 
     cart.totalPrice = cart.products.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
 
     await cart.save();
@@ -81,7 +87,7 @@ const updateProductQuantity = async (req, res) => {
 
     // Find the product in the cart
     const product = cart.products.find(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId,
     );
     if (!product) {
       return res.status(404).json({ error: 'Product not found in cart' });
@@ -106,7 +112,7 @@ const removeProductFromCart = async (req, res) => {
 
     // Find the index of the product in the cart
     const productIndex = cart.products.findIndex(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId,
     );
     if (productIndex === -1) {
       return res.status(404).json({ error: 'Product not found in cart' });

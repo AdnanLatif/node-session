@@ -66,7 +66,7 @@ const updateProduct = async (req, res) => {
   } = req.body;
 
   try {
-    let product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }

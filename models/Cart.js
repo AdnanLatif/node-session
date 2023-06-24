@@ -33,7 +33,7 @@ const cartSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 cartSchema.pre('save', function (next) {

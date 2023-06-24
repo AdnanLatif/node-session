@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const productController = require('../controllers/productController');
 const {
@@ -17,7 +18,7 @@ router.post(
   '/',
   authenticateUser,
   authorizeUser,
-  productController.createProduct
+  productController.createProduct,
 );
 
 // Update a product
@@ -25,7 +26,7 @@ router.put(
   '/:id',
   authenticateUser,
   authorizeUser,
-  productController.updateProduct
+  productController.updateProduct,
 );
 
 // Delete a product
@@ -33,7 +34,7 @@ router.delete(
   '/:id',
   authenticateUser,
   authorizeUser,
-  productController.deleteProduct
+  productController.deleteProduct,
 );
 
 module.exports = router;

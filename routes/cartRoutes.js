@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const cartController = require('../controllers/cartController');
 const { authenticateUser } = require('../middleware/authMiddleware');
@@ -13,14 +14,14 @@ router.post('/', authenticateUser, cartController.addProductToCart);
 router.put(
   '/:productId',
   authenticateUser,
-  cartController.updateProductQuantity
+  cartController.updateProductQuantity,
 );
 
 // Remove a product from the cart
 router.delete(
   '/:productId',
   authenticateUser,
-  cartController.removeProductFromCart
+  cartController.removeProductFromCart,
 );
 
 module.exports = router;

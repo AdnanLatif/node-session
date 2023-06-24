@@ -22,7 +22,7 @@ const placeOrder = async (req, res) => {
 
     const totalPrice = cart.products.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
 
     const order = new Order({
@@ -40,7 +40,7 @@ const placeOrder = async (req, res) => {
           product.availableQuantity -= item.quantity;
           await product.save();
         }
-      })
+      }),
     );
 
     await emailService.sendCartDetailsEmail(user.email, cart);

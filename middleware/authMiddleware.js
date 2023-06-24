@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const authenticateUser = (req, res, next) => {
-  const token =
-    req.headers.authorization && req.headers.authorization.split(' ')[1];
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
   const secretKey = process.env.SECRET_JWT_KEY;
 
   if (!token) {
@@ -19,7 +18,7 @@ const authenticateUser = (req, res, next) => {
     // Update the token with the new expiry time
     const updatedToken = jwt.sign(
       { user: decoded.user, exp: newExpiryTime },
-      secretKey
+      secretKey,
     );
 
     req.user = decoded.user;

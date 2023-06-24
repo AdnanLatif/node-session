@@ -1,37 +1,53 @@
 const express = require('express');
-const app = express();
+const cluster = require('cluster');
+const os = require('os');
 const mongoose = require('mongoose');
+
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3001;
 
-mongoose.connect(process.env.MONGODB, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+if (cluster.isMaster) {
+  const numCPUs = os.cpus().length;
+  for (let i = 0; i < numCPUs; i += 1) {
+    cluster.fork();
+  }
+} else {
+  const app = express();
 
-const db = mongoose.connection;
+  mongoose.connect(process.env.MONGODB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
-// Check database connection
-db.on('error', console.error.bind(console, 'Connection error:'));
-db.once('connected', () => {
-  console.log('Connected to the database');
-});
+  const db = mongoose.connection;
 
-app.use(express.json());
+  // Check database connection
+  db.on('error', console.error.bind(console, 'Connection error:'));
+  db.once('connected', () => {
+    console.log('Connected to the database');
+  });
 
-// Set up routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/categories', require('./routes/categoryRoutes'));
-app.use('/api/cart', require('./routes/cartRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
-app.get('/', (req, res) => {
-  res.send('Welcome to the Ecom API');
-});
+  app.use(express.json());
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+  // Set up routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/products', productRoutes);
+  app.use('/api/categories', categoryRoutes);
+  app.use('/api/cart', cartRoutes);
+  app.use('/api/orders', orderRoutes);
+  app.get('/', (req, res) => {
+    res.send('Welcome to the Ecom API');
+  });
+
+  // Start the server
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+  });
+}
