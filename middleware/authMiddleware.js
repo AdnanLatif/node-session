@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 
 const authenticateUser = (req, res, next) => {
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+  const token =
+    req.headers.authorization && req.headers.authorization.split(' ')[1];
   const secretKey = process.env.SECRET_JWT_KEY;
 
   if (!token) {
@@ -18,7 +19,7 @@ const authenticateUser = (req, res, next) => {
     // Update the token with the new expiry time
     const updatedToken = jwt.sign(
       { user: decoded.user, exp: newExpiryTime },
-      secretKey,
+      secretKey
     );
 
     req.user = decoded.user;
@@ -32,7 +33,9 @@ const authenticateUser = (req, res, next) => {
 const authorizeUser = (req, res, next) => {
   // Check if the user is an admin
   if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(403).json({
+      error: 'Forbidden: You are not authorized to perform this action.',
+    });
   }
 
   // Move to the next middleware
