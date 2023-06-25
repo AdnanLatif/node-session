@@ -1,10 +1,7 @@
 const express = require('express');
 const cluster = require('cluster');
 const os = require('os');
-const path = require('path');
 const mongoose = require('mongoose');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger_output.json');
 
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -45,12 +42,6 @@ if (cluster.isMaster) {
   app.use('/api/categories', categoryRoutes);
   app.use('/api/cart', cartRoutes);
   app.use('/api/orders', orderRoutes);
-
-  // Serve static files from the 'public' folder
-  app.use(express.static(path.join(__dirname, 'public')));
-  // Serve Swagger UI
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
   app.get('/', (req, res) => {
     res.send('Welcome to the Ecom API');
   });
